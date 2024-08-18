@@ -1,0 +1,23 @@
+package {{.PackageName}}
+
+import (
+	"context"
+
+	"{{.GoPackagePath}}/{{.GrpcPackageName}}"
+)
+
+type (
+	{{.ServiceName}}Handler struct {
+		{{.GrpcPackageName}}.Unimplemented{{.ServiceName}}Server
+	}
+)
+
+func New{{.ServiceName}}Handler() {{.ServiceName}}Handler {
+	return {{.ServiceName}}Handler{}
+}
+
+{{range .Methods}}
+func (g *{{$.ServiceName}}Handler) {{.Name}}(ctx context.Context, req *{{$.GrpcPackageName}}.{{.InputType}}) (*{{$.GrpcPackageName}}.{{.OutputType}}, error) {
+	return nil, nil
+}
+{{end}}
