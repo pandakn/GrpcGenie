@@ -1,9 +1,11 @@
 package protoutil
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/pandakn/GrpcGenie/internal/generator"
 )
@@ -38,10 +40,15 @@ func readProtoFile(protoFilePath string) (string, error) {
 
 // extractServices handles parsing of services and methods.
 func extractServices(protoData string) ([]ServiceInfo, error) {
+	if strings.TrimSpace(protoData) == "" {
+		return nil, errors.New("empty protobuf data string")
+	}
+
 	servicePattern := regexp.MustCompile(`service\s+(\w+)\s*{((?:\s*rpc\s+(\w+)\s*\((\w+)\)\s*returns\s*\((\w+)\)\s*(?:;|\{?\s*\}?)\s*)+)}`)
 	matches := servicePattern.FindAllStringSubmatch(protoData, -1)
 
-	var services []ServiceInfo
+	services := make([]ServiceInfo, 0)
+
 	for _, match := range matches {
 		serviceName := match[1]
 		rpcMethods := match[2]
@@ -58,15 +65,25 @@ func extractServices(protoData string) ([]ServiceInfo, error) {
 		services = append(services, serviceInfo)
 	}
 
+	if len(services) == 0 {
+		return nil, errors.New("no valid rpc methods found")
+	}
+
 	return services, nil
 }
 
 // extractMethods handles parsing of methods within a service.
 func extractMethods(rpcMethods string) ([]generator.Method, error) {
+
+	if strings.TrimSpace(rpcMethods) == "" {
+		return nil, errors.New("empty rpc methods string")
+	}
+
 	methodPattern := regexp.MustCompile(`rpc\s+(\w+)\s*\((\w+)\)\s*returns\s*\((\w+)\)`)
 	methodMatches := methodPattern.FindAllStringSubmatch(rpcMethods, -1)
 
-	var methods []generator.Method
+	methods := make([]generator.Method, 0)
+
 	for _, methodMatch := range methodMatches {
 		methodName := methodMatch[1]
 		inputType := methodMatch[2]
@@ -78,6 +95,10 @@ func extractMethods(rpcMethods string) ([]generator.Method, error) {
 			OutputType: outputType,
 		}
 		methods = append(methods, methodInfo)
+	}
+
+	if len(methods) == 0 {
+		return nil, errors.New("no valid rpc methods found")
 	}
 
 	return methods, nil
