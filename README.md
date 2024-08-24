@@ -15,6 +15,12 @@ To install GrpcGenie, use the following command (Deploying in the future. Stay t
 
 ```bash
 git clone https://github.com/pandakn/GrpcGenie.git
+
+cd GrpcGenie
+
+go build -o grpcgenie cmd/grpcgenie/main.go
+# or
+make build
 ```
 
 ## Usage
