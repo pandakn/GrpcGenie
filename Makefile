@@ -27,16 +27,10 @@ help:
 
 ## Build the grpcgenie binary
 build:
-	go build -o grpcgenie cmd/grpcgenie/main.go
-
-## Generate gRPC code for hello service
-gen-hello-grpc:
-	protoc --go_out=. --go_opt=paths=source_relative \
-	 --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-	 example/hello/hellopd/hello.proto
+	go build -o grpcgenie cmd/main.go
 
 ## Generate handler for hello service
-gen-hello-handler:
+gen-hello:
 	./grpcgenie --proto example/hello/hellopd/hello.proto \
 	--output example/hello/hellohandler/hello_grpc_handler.go \
 	--package hellohandler \
