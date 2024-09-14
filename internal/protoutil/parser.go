@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 
@@ -27,6 +28,26 @@ func ParseProtoGetServices(protoFilePath string) ([]ServiceInfo, error) {
 	}
 
 	return services, nil
+}
+
+// generate go grpc file
+func GenGrpcFile(protoFilePath string) error {
+	// Construct the protoc command with required options
+	cmd := exec.Command(
+		"protoc",
+		"--go_out=.",
+		"--go_opt=paths=source_relative",
+		"--go-grpc_out=.",
+		"--go-grpc_opt=paths=source_relative",
+		protoFilePath,
+	)
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to run protoc: %w", err)
+	}
+
+	return nil
 }
 
 // readProtoFile handles file reading.

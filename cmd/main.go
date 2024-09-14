@@ -23,6 +23,12 @@ var rootCmd = &cobra.Command{
 	Use:   "grpcgenie",
 	Short: "GrpcGenie generates gRPC handler files from .proto definitions",
 	Run: func(cmd *cobra.Command, args []string) {
+		err := protoutil.GenGrpcFile(protoPath)
+		if err != nil {
+			log.Error("Error: %v\n", err)
+		}
+		log.Info("Go gRPC file generated successfully!")
+
 		services, err := protoutil.ParseProtoGetServices(protoPath)
 		if err != nil {
 			log.Error("Error: %v\n", err)
